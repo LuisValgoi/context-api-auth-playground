@@ -6,21 +6,34 @@ const signIn = () => {};
 
 const signOut = () => {};
 
-const AuthContext = createContext({ signed: false, user: {}, signIn, signOut });
+const AuthContext = createContext({ signed: false, signing: false, user: {}, signIn, signOut });
 
 export const AuthProvider = (props) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(localStorage.getItem("user"));
+  const [signing, setSigning] = useState(false);
+
+  const handleSetUser = (response) => {
+    setUser(response.user);
+    localStorage.setItem("user", response.user);
+  };
+
+  const handleRemoveUser = () => {
+    setUser(null);
+    localStorage.removeItem("user");
+  };
 
   async function signIn() {
+    setSigning(true);
     const response = await auth.signIn();
-    setUser(response.user);
+    handleSetUser(response);
+    setSigning(false);
   }
 
   async function signOut() {
-    setUser(null);
+    handleRemoveUser(null);
   }
 
-  return <AuthContext.Provider value={{ signed: !!user, user: user, signIn, signOut }}>{props.children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ signed: !!user, signing: signing, user: user, signIn, signOut }}>{props.children}</AuthContext.Provider>;
 };
 
 export function useAuth() {
