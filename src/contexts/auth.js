@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 import * as auth from "../service/auth";
 
@@ -6,15 +6,15 @@ const signIn = () => {};
 
 const signOut = () => {};
 
-const AuthContext = createContext({ signed: false, signing: false, user: {}, signIn, signOut });
+const AuthContext = createContext({ signed: false, loading: false, user: {}, signIn, signOut });
 
 export const AuthProvider = (props) => {
-  const [user, setUser] = useState(localStorage.getItem("user"));
-  const [signing, setSigning] = useState(false);
+  const [user, setUser] = useState(localStorage.getItem("user") && JSON.parse(localStorage.getItem("user")));
+  const [loading, setLoading] = useState(false);
 
   const handleSetUser = (response) => {
     setUser(response.user);
-    localStorage.setItem("user", response.user);
+    localStorage.setItem("user", JSON.stringify(response.user));
   };
 
   const handleRemoveUser = () => {
@@ -22,18 +22,18 @@ export const AuthProvider = (props) => {
     localStorage.removeItem("user");
   };
 
-  async function signIn() {
-    setSigning(true);
+  const handleSignIn = async () => {
+    setLoading(true);
     const response = await auth.signIn();
     handleSetUser(response);
-    setSigning(false);
-  }
+    setLoading(false);
+  };
 
-  async function signOut() {
+  const handleSignOut = async () => {
     handleRemoveUser(null);
-  }
+  };
 
-  return <AuthContext.Provider value={{ signed: !!user, signing: signing, user: user, signIn, signOut }}>{props.children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ signed: !!user, loading: loading, user: user, signIn: handleSignIn, signOut: handleSignOut }}>{props.children}</AuthContext.Provider>;
 };
 
 export function useAuth() {

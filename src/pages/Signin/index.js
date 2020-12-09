@@ -3,11 +3,11 @@ import React from "react";
 import { useAuth } from "../../contexts/auth";
 
 const SignIn = () => {
-  const { signIn, signing } = useAuth();
+  const { signIn, loading } = useAuth();
 
   return (
     <>
-      <button onClick={() => signIn()}>{signing ? "Loading..." : "SignIn"}</button>
+      <button onClick={() => signIn()}>{loading ? "Loading..." : "SignIn"}</button>
     </>
   );
 };
