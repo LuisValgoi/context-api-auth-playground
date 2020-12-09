@@ -4,7 +4,9 @@ import * as auth from "../service/auth";
 
 const signIn = () => {};
 
-const AuthContext = createContext({ signed: false, user: {}, signIn });
+const signOut = () => {};
+
+const AuthContext = createContext({ signed: false, user: {}, signIn, signOut });
 
 export const AuthProvider = (props) => {
   const [user, setUser] = useState(null);
@@ -14,7 +16,11 @@ export const AuthProvider = (props) => {
     setUser(response.user);
   }
 
-  return <AuthContext.Provider value={{ signed: !!user, user: user, signIn }}>{props.children}</AuthContext.Provider>;
+  async function signOut() {
+    setUser(null);
+  }
+
+  return <AuthContext.Provider value={{ signed: !!user, user: user, signIn, signOut }}>{props.children}</AuthContext.Provider>;
 };
 
 export function useAuth() {
