@@ -1,16 +1,13 @@
 import React from "react";
 
-import { signIn } from "../../service/auth";
+import { useAuth } from "../../contexts/auth";
 
 const SignIn = () => {
-  const handleSignIn = async () => {
-    const res = await signIn();
-    console.log(res);
-  };
+  const { signIn } = useAuth();
 
   return (
     <>
-      <button onClick={() => handleSignIn()}>SignIn</button>
+      <button onClick={() => signIn()}>SignIn</button>
     </>
   );
 };

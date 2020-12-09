@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Link } from "react-router-dom";
+import { useAuth } from "../../contexts/auth";
 
 const styles = {
   header: {
@@ -13,14 +14,20 @@ const styles = {
 };
 
 export default function Header() {
+  const { signed } = useAuth();
+
   return (
     <div style={styles.header}>
-      <Link style={styles.link} to="/dashboard">
-        Dashboard
-      </Link>
-      <Link style={styles.link} to="/signin">
-        SignIn
-      </Link>
+      {signed && (
+        <Link style={styles.link} to="/dashboard">
+          Dashboard
+        </Link>
+      )}
+      {!signed && (
+        <Link style={styles.link} to="/signin">
+          SignIn
+        </Link>
+      )}
     </div>
   );
 }
