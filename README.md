@@ -21,3 +21,8 @@ Keep in mind that the state of the app is being handled by the Context API and t
 Once the user clicks on the `SignIn` button, we are storing in the `localStorage`, the `user: {}` prop.
 
 On it, it has the value which is a stringfied response comming from the `/service/auth.js` file.
+
+# Dependencies
+
+- `react-router-dom`: for navigation.
+- `axios`: for requests.

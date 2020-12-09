@@ -2,6 +2,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 import * as auth from "../service/auth";
 
+import api from "../service/api";
+
 const signIn = () => {};
 
 const signOut = () => {};
@@ -9,22 +11,42 @@ const signOut = () => {};
 const AuthContext = createContext({ signed: false, loading: false, user: {}, signIn, signOut });
 
 export const AuthProvider = (props) => {
-  const [user, setUser] = useState(localStorage.getItem("user") && JSON.parse(localStorage.getItem("user")));
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const handleSetUser = (response) => {
-    setUser(response.user);
-    localStorage.setItem("user", JSON.stringify(response.user));
-  };
+  useEffect(() => {
+    async function loadStoragedData() {
+      const storagedUser = localStorage.getItem("user");
+      const storagedToken = localStorage.getItem("token");
+
+      if (storagedUser && storagedToken) {
+        api.defaults.headers.Authorization = `Bearer ${storagedToken}`;
+        setUser(JSON.parse(storagedUser));
+        setLoading(false);
+      }
+    }
+    loadStoragedData();
+  }, []);
 
   const handleRemoveUser = () => {
     setUser(null);
     localStorage.removeItem("user");
   };
 
+  const handleSetHeaders = (response) => {
+    localStorage.setItem("token", response.token);
+    api.defaults.headers.Authorization = `Bearer ${response.token}`;
+  };
+
+  const handleSetUser = (response) => {
+    setUser(response.user);
+    localStorage.setItem("user", JSON.stringify(response.user));
+  };
+
   const handleSignIn = async () => {
     setLoading(true);
     const response = await auth.signIn();
+    handleSetHeaders(response);
     handleSetUser(response);
     setLoading(false);
   };
